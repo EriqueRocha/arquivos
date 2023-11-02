@@ -1,0 +1,36 @@
+version: '3.9'
+services:
+  db:
+    image: postgres:15.1
+    restart: always
+    environment:
+      TZ: America/Sao_Paulo
+      POSTGRES_USER: docker
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: erique-projetos-api
+    ports:
+      - 5432:5432
+    expose:
+      - 5432
+    networks:
+      - erique-network
+  erique-projetos-API:
+    image: eriquercoha/erique-projetos-api
+    restart: always
+    build: ./erique-projetos-api
+    working_dir: /erique-projetos-api
+    environment:
+      TZ: America/Sao_Paulo
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/erique-projetos-api
+      SPRING_DATASOURCE_USERNAME: docker
+      SPRING_DATASOURCE_PASSWORD: admin123
+    ports:
+      - 80:80
+    command: mvn spring-boot:run
+    depends_on:
+      - db
+    networks:
+      - erique-network
+networks:
+  erique-network:
+    driver: bridge
